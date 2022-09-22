@@ -1,3 +1,4 @@
+- [首页](/)
 - MySQL
   - [索引失效](./docs/MySQL/索引失效.md)
   - [主从不同步](./docs/MySQL/主从不同步.md)
