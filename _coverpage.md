@@ -1,7 +1,7 @@
 # yangtao的文档库 <small>1.0</small>
 
 * 基于Docsify
-* 知识
+* 文档库
 * 知识 & 笔记
 
 
