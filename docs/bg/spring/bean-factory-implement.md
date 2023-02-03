@@ -121,3 +121,82 @@
 2. 不会主动添加Bean后处理器
 3. 不会主动初始化单例
 4. 不会解析beanFactory以及${}、#{}
+
+### 拓展
+
+#### Bean后处理器具有顺序
+
+1. 新增接口Inter
+
+   ```java
+   interface Inter {
+   }
+   ```
+
+2. 让Bean1和Bean2类都实现这个接口，并在Bean1类中注入一个Inter类对象
+
+   ```java
+   class Bean1 implements Inter {
+       @Autowired
+       @Resource(name = "bean1")
+       Inter inter;
+       public Inter getInter() {
+           return bean1;
+       }
+   }
+   ```
+
+   ```java
+   class Bean2 implements Inter {
+   }
+   ```
+
+3. Config类中生命两个bean，一个为bean1，一个为bean2
+
+   ```java
+   @Configuration
+   class Config {
+       @Bean
+       public Inter bean1() {
+           System.out.println("开始构造bean1");
+           return new Bean1();
+       }
+       @Bean
+       public Inter bean2() {
+           System.out.println("开始构造bean2");
+           return new Bean2();
+       }
+   }
+   ```
+
+4. 问题：同时使用@Autowired和@Resource，输出是什么？
+
+   ```java
+   beanFactory
+           .getBeansOfType(BeanPostProcessor.class)
+           .values()
+           .forEach(beanFactory::addBeanPostProcessor);
+   System.out.println("--------------------");
+   System.out.println(beanFactory.getBean(Bean1.class).getBean2());
+   ```
+
+5. 默认情况下是输出Bean2对象的，因为@Autowired具有更高的优先级
+
+   ![image-20220927203719134](https://picgo-1304850123.cos.ap-guangzhou.myqcloud.com/image-20220927203719134.png)
+
+6. 通过beanFactory.getDependencyComparator()获取一个比较器，让@Resource具有更高的优先级
+
+   ```java
+   beanFactory
+           .getBeansOfType(BeanPostProcessor.class)
+           .values()
+           .stream()
+           .sorted(beanFactory.getDependencyComparator())
+           .forEach(beanFactory::addBeanPostProcessor);
+   System.out.println("--------------------");
+   System.out.println(beanFactory.getBean(Bean1.class).getInter());
+   ```
+
+7. 此时输出为Bean2对象
+
+   ![image-20220927203931065](https://picgo-1304850123.cos.ap-guangzhou.myqcloud.com/image-20220927203931065.png)

@@ -4,11 +4,17 @@
 # 启动
 redis-server xxx.conf
 
-# 启动
-redis-cli -p 6379
+# 进入redis自带客户端
+redis-cli -h 127.0.0.1 -p 6379 -a pwd
 
 # 关闭连接
 shutdown
+
+# 测试连通性
+ping
+
+# 获取帮助命令
+help @generic
 ```
 
 
@@ -58,6 +64,15 @@ flushall
 ## 键key
 
 ```bash
+# 设置键值对
+set key value
+
+# 获取key对应的值
+get key
+
+# 删除key
+del key
+
 # 查看所有key
 keys *
 
@@ -88,11 +103,14 @@ set key value
 # 获取key对应的值
 get key
 
+# 设置多个键值对
+mset key value [key value...]
+
+# 获取多个值
+mget key [key]
+
 # 删除key
 del key
-
-# 查看所有key
-keys *
 
 # key是否存在
 exists key
@@ -115,6 +133,9 @@ incrby key incrment
 # 将key对应的值减少value（Integer）
 decrby key decrment
 
+# 浮点数增长（需指定增长数）
+incrbyfloat key incrment
+
 # 获取key下标[start,end]对应的内容
 getrange key start end
 
@@ -129,12 +150,6 @@ setex key seconds value
 
 # 如果key不存在则设置键值对
 setnx key value
-
-# 设置多个键值对
-mset key value [key value...]
-
-# 获取多个值
-mget key [key]
 
 # 设置多个值，原子性操作
 msetnx key value [key value...]
@@ -186,6 +201,9 @@ lset key index value
 
 # 在key前面|后面插入value
 linsert key before|after pivot value
+
+# 阻塞获取元素（未获取到等待一段时间）
+blpop / brpop key [key ...] timeout
 ```
 
 
@@ -238,8 +256,11 @@ hset key field value
 # 获取哈希表中的的field字段对应的值
 hget key field
 
-# 存入/获取多个
-hmset/hmget key field value
+# 存入多个
+hmset key field value
+
+# 获取多个
+hmget key field
 
 # 获取哈希表中所有的键值对
 hgetall	key
@@ -274,6 +295,9 @@ hsetnx key field value
 # 将一个或多个值及其分值添加到须有序集合中
 zadd key score member
 
+# 获取指定元素的score值
+zscore key member
+
 # 返回指定区间内的成员（显示分值并递增）
 zrange key start stop [withscores]
 
@@ -289,11 +313,23 @@ zrem key member [member...]
 # 返回集合的成员数量
 zcard key
 
+# 统计score值在给定范围内的所有元素的个数
+scount key min max
+
 # 返回集合中成员从小到大的排位
 zrank key member
 
 # 返回集合中成员从大到小的排位
 zrevrank key member
+
+# 返回集合2中没有的集合1元素
+zdiff key1 [key2...]
+
+# 返回两个集合的交集
+zinter key key
+
+# 返回两个集合的并集
+zunion key key
 ```
 
 
